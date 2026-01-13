@@ -1,0 +1,376 @@
+{
+  "metadata": {
+    "audio_file": "audio_files/tashini.wav",
+    "timestamp": "2026-01-13T14:37:56.323692",
+    "version": "1.0.0"
+  },
+  "transcript": "I would like to speak for 30 seconds about servicing his normal daily life activities. Every day starts the same way for most of his recovery boys. Getting undressed in toward take short breaks in between sometimes raises productive, sometimes it really slowed by eveningwear charged per student scrolling in, talking to family or planning for tomorrow.",
+  "scores": {
+    "final_score": 44.45,
+    "category_scores": {
+      "speech_quality": 82.33,
+      "linguistic_quality": 0.0,
+      "confidence": 74.84,
+      "accent_clarity": 6.9
+    },
+    "component_scores": {
+      "pronunciation_accuracy": 79.0,
+      "fluency": 68.0,
+      "completeness": 100.0,
+      "grammar_quality": 0,
+      "content_depth": 0,
+      "answer_relevance": 0,
+      "mti_impact": 93.1,
+      "native_likelihood": 6.9,
+      "acoustic_confidence": 49.68,
+      "linguistic_confidence": 100.0
+    },
+    "grade": "D",
+    "performance_level": "Needs Improvement"
+  },
+  "detailed_results": {
+    "azure_speech": {
+      "transcript": "I would like to speak for 30 seconds about servicing his normal daily life activities. Every day starts the same way for most of his recovery boys. Getting undressed in toward take short breaks in between sometimes raises productive, sometimes it really slowed by eveningwear charged per student scrolling in, talking to family or planning for tomorrow.",
+      "word_timings": [
+        {
+          "word": "i",
+          "accuracy_score": 82.0
+        },
+        {
+          "word": "would",
+          "accuracy_score": 73.0
+        },
+        {
+          "word": "like",
+          "accuracy_score": 91.0
+        },
+        {
+          "word": "to",
+          "accuracy_score": 97.0
+        },
+        {
+          "word": "speak",
+          "accuracy_score": 94.0
+        },
+        {
+          "word": "for",
+          "accuracy_score": 59.0
+        },
+        {
+          "word": "thirty",
+          "accuracy_score": 57.0
+        },
+        {
+          "word": "seconds",
+          "accuracy_score": 65.0
+        },
+        {
+          "word": "about",
+          "accuracy_score": 63.0
+        },
+        {
+          "word": "servicing",
+          "accuracy_score": 63.0
+        },
+        {
+          "word": "his",
+          "accuracy_score": 70.0
+        },
+        {
+          "word": "normal",
+          "accuracy_score": 73.0
+        },
+        {
+          "word": "daily",
+          "accuracy_score": 97.0
+        },
+        {
+          "word": "life",
+          "accuracy_score": 24.0
+        },
+        {
+          "word": "activities",
+          "accuracy_score": 57.0
+        },
+        {
+          "word": "every",
+          "accuracy_score": 36.0
+        },
+        {
+          "word": "day",
+          "accuracy_score": 91.0
+        },
+        {
+          "word": "starts",
+          "accuracy_score": 50.0
+        },
+        {
+          "word": "the",
+          "accuracy_score": 88.0
+        },
+        {
+          "word": "same",
+          "accuracy_score": 97.0
+        },
+        {
+          "word": "way",
+          "accuracy_score": 97.0
+        },
+        {
+          "word": "for",
+          "accuracy_score": 97.0
+        },
+        {
+          "word": "most",
+          "accuracy_score": 88.0
+        },
+        {
+          "word": "of",
+          "accuracy_score": 94.0
+        },
+        {
+          "word": "his",
+          "accuracy_score": 97.0
+        },
+        {
+          "word": "recovery",
+          "accuracy_score": 35.0
+        },
+        {
+          "word": "boys",
+          "accuracy_score": 88.0
+        },
+        {
+          "word": "getting",
+          "accuracy_score": 88.0
+        },
+        {
+          "word": "undressed",
+          "accuracy_score": 52.0
+        },
+        {
+          "word": "in",
+          "accuracy_score": 100.0
+        },
+        {
+          "word": "toward",
+          "accuracy_score": 67.0
+        },
+        {
+          "word": "take",
+          "accuracy_score": 50.0
+        },
+        {
+          "word": "short",
+          "accuracy_score": 88.0
+        },
+        {
+          "word": "breaks",
+          "accuracy_score": 97.0
+        },
+        {
+          "word": "in",
+          "accuracy_score": 97.0
+        },
+        {
+          "word": "between",
+          "accuracy_score": 94.0
+        },
+        {
+          "word": "sometimes",
+          "accuracy_score": 70.0
+        },
+        {
+          "word": "raises",
+          "accuracy_score": 49.0
+        },
+        {
+          "word": "productive",
+          "accuracy_score": 70.0
+        },
+        {
+          "word": "sometimes",
+          "accuracy_score": 88.0
+        },
+        {
+          "word": "it",
+          "accuracy_score": 97.0
+        },
+        {
+          "word": "really",
+          "accuracy_score": 31.0
+        },
+        {
+          "word": "slowed",
+          "accuracy_score": 100.0
+        },
+        {
+          "word": "by",
+          "accuracy_score": 97.0
+        },
+        {
+          "word": "eveningwear",
+          "accuracy_score": 68.0
+        },
+        {
+          "word": "charged",
+          "accuracy_score": 49.0
+        },
+        {
+          "word": "per",
+          "accuracy_score": 97.0
+        },
+        {
+          "word": "student",
+          "accuracy_score": 94.0
+        },
+        {
+          "word": "scrolling",
+          "accuracy_score": 88.0
+        },
+        {
+          "word": "in",
+          "accuracy_score": 100.0
+        },
+        {
+          "word": "talking",
+          "accuracy_score": 91.0
+        },
+        {
+          "word": "to",
+          "accuracy_score": 97.0
+        },
+        {
+          "word": "family",
+          "accuracy_score": 73.0
+        },
+        {
+          "word": "or",
+          "accuracy_score": 97.0
+        },
+        {
+          "word": "planning",
+          "accuracy_score": 85.0
+        },
+        {
+          "word": "for",
+          "accuracy_score": 94.0
+        },
+        {
+          "word": "tomorrow",
+          "accuracy_score": 94.0
+        }
+      ],
+      "pronunciation_accuracy": 79.0,
+      "word_errors": [
+        {
+          "word": "for",
+          "error_type": "Mispronunciation",
+          "accuracy_score": 59.0
+        },
+        {
+          "word": "thirty",
+          "error_type": "Mispronunciation",
+          "accuracy_score": 57.0
+        },
+        {
+          "word": "life",
+          "error_type": "Mispronunciation",
+          "accuracy_score": 24.0
+        },
+        {
+          "word": "activities",
+          "error_type": "Mispronunciation",
+          "accuracy_score": 57.0
+        },
+        {
+          "word": "every",
+          "error_type": "Mispronunciation",
+          "accuracy_score": 36.0
+        },
+        {
+          "word": "starts",
+          "error_type": "Mispronunciation",
+          "accuracy_score": 50.0
+        },
+        {
+          "word": "recovery",
+          "error_type": "Mispronunciation",
+          "accuracy_score": 35.0
+        },
+        {
+          "word": "undressed",
+          "error_type": "Mispronunciation",
+          "accuracy_score": 52.0
+        },
+        {
+          "word": "take",
+          "error_type": "Mispronunciation",
+          "accuracy_score": 50.0
+        },
+        {
+          "word": "raises",
+          "error_type": "Mispronunciation",
+          "accuracy_score": 49.0
+        },
+        {
+          "word": "really",
+          "error_type": "Mispronunciation",
+          "accuracy_score": 31.0
+        },
+        {
+          "word": "charged",
+          "error_type": "Mispronunciation",
+          "accuracy_score": 49.0
+        }
+      ],
+      "completeness": 100.0,
+      "fluency": 68.0,
+      "detailed_scores": {
+        "accuracy_score": 79.0,
+        "fluency_score": 68.0,
+        "completeness_score": 100.0,
+        "pronunciation_score": 70.9,
+        "prosody_score": 71.5
+      }
+    },
+    "llm_analysis": {
+      "grammar_quality": 0,
+      "sentence_formation": 0,
+      "content_depth": 0,
+      "answer_relevance": 0,
+      "professional_tone": 0,
+      "overall_score": 0.0,
+      "feedback": "Analysis completed successfully."
+    },
+    "mti_analysis": {
+      "detected_accent": "strong-accent",
+      "confidence": 0.75,
+      "accent_probabilities": {
+        "timing_variance": 0.8931977377735744,
+        "pitch_smoothness": 1.740898187563289e-05,
+        "spectral_centroid_mean": 1201.8137634843188,
+        "spectral_centroid_variance": 1108.0210144108833
+      },
+      "mti_impact_score": 93.09851131693526,
+      "native_likelihood": 6.901488683064741
+    },
+    "confidence_analysis": {
+      "acoustic_confidence": 49.68121357895488,
+      "linguistic_confidence": 100.0,
+      "overall_confidence": 74.84060678947745,
+      "acoustic_features": {
+        "speech_rate_stability": 0.5,
+        "pause_regularity": 0.5506345920066568,
+        "pitch_variance": 0.2485732138156891,
+        "energy_consistency": 0.529350996017456,
+        "completion_score": 0.6555018771079422
+      },
+      "linguistic_features": {
+        "semantic_coherence": 0.1685369461774826,
+        "content_complexity": 0.6672458648681641,
+        "sentence_count": 3
+      }
+    }
+  }
+}
