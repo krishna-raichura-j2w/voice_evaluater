@@ -35,7 +35,10 @@ class ReportGenerator:
         final_scores = self._calculate_final_scores(
             speech_results, llm_results, mti_results, confidence_results
         )
-        
+
+        # Generate interview summary with positives and negatives
+        summary = self._generate_summary(final_scores, llm_results, mti_results)
+
         # Compile full report
         report = {
             "metadata": {
@@ -44,6 +47,7 @@ class ReportGenerator:
                 "version": "1.0.0"
             },
             "transcript": speech_results.get("transcript", ""),
+            "summary": summary,
             "scores": final_scores,
             "detailed_results": {
                 "azure_speech": speech_results,
@@ -74,18 +78,20 @@ class ReportGenerator:
         grammar = llm_results.get("grammar_quality", 0)
         content = llm_results.get("content_depth", 0)
         relevance = llm_results.get("answer_relevance", 0)
-        
+
+        # Accent scores - use accent_clarity_score directly (higher = better)
+        accent_clarity = mti_results.get("accent_clarity_score", 50)
         mti_impact = mti_results.get("mti_impact_score", 50)
         native_likelihood = mti_results.get("native_likelihood", 50)
-        
+
         acoustic_conf = confidence_results.get("acoustic_confidence", 0)
         linguistic_conf = confidence_results.get("linguistic_confidence", 0)
         overall_conf = confidence_results.get("overall_confidence", 0)
-        
+
         # Category scores (averages)
         speech_quality = (pronunciation + fluency + completeness) / 3
         linguistic_quality = (grammar + content + relevance) / 3
-        accent_score = 100 - mti_impact  # Invert MTI impact (lower impact = higher score)
+        accent_score = accent_clarity  # Higher = better English accent
         confidence_score = overall_conf
         
         # Overall final score (weighted)
@@ -111,7 +117,8 @@ class ReportGenerator:
                 "grammar_quality": round(grammar, 2),
                 "content_depth": round(content, 2),
                 "answer_relevance": round(relevance, 2),
-                "mti_impact": round(mti_impact, 2),
+                "accent_clarity_score": round(accent_clarity, 2),  # Higher = better English
+                "mti_impact": round(mti_impact, 2),  # Higher = more MTI (informational)
                 "native_likelihood": round(native_likelihood, 2),
                 "acoustic_confidence": round(acoustic_conf, 2),
                 "linguistic_confidence": round(linguistic_conf, 2)
@@ -153,7 +160,127 @@ class ReportGenerator:
             return "Satisfactory"
         else:
             return "Needs Improvement"
-    
+
+    def _generate_summary(self,
+                          final_scores: Dict[str, Any],
+                          llm_results: Dict[str, Any],
+                          mti_results: Dict[str, Any]) -> Dict[str, Any]:
+        """
+        Generate interview summary with positives and negatives based on scores
+
+        Args:
+            final_scores: Calculated final scores dictionary
+            llm_results: LLM analysis results
+            mti_results: MTI/accent analysis results
+
+        Returns:
+            Summary dictionary with positives, negatives, and overall assessment
+        """
+        positives = []
+        negatives = []
+
+        component = final_scores["component_scores"]
+        category = final_scores["category_scores"]
+        final_score = final_scores["final_score"]
+
+        # Thresholds
+        STRONG_THRESHOLD = 80
+        GOOD_THRESHOLD = 70
+        WEAK_THRESHOLD = 60
+
+        # --- Analyze Speech Quality ---
+        if component["pronunciation_accuracy"] >= STRONG_THRESHOLD:
+            positives.append("Excellent pronunciation accuracy - words are clearly articulated")
+        elif component["pronunciation_accuracy"] < WEAK_THRESHOLD:
+            negatives.append("Pronunciation needs improvement - some words are unclear or mispronounced")
+
+        if component["fluency"] >= STRONG_THRESHOLD:
+            positives.append("Strong fluency - speaks smoothly without hesitation")
+        elif component["fluency"] < WEAK_THRESHOLD:
+            negatives.append("Fluency needs work - speech contains frequent pauses or hesitations")
+
+        if component["completeness"] >= STRONG_THRESHOLD:
+            positives.append("Comprehensive responses - answers are complete and well-structured")
+        elif component["completeness"] < WEAK_THRESHOLD:
+            negatives.append("Responses feel incomplete - answers could be more thorough")
+
+        # --- Analyze Linguistic Quality ---
+        if component["grammar_quality"] >= STRONG_THRESHOLD:
+            positives.append("Excellent grammar usage - demonstrates strong language command")
+        elif component["grammar_quality"] < WEAK_THRESHOLD:
+            negatives.append("Grammar needs attention - contains grammatical errors")
+
+        if component["content_depth"] >= STRONG_THRESHOLD:
+            positives.append("Rich content depth - provides detailed and insightful responses")
+        elif component["content_depth"] < WEAK_THRESHOLD:
+            negatives.append("Content lacks depth - answers are superficial or lack detail")
+
+        if component["answer_relevance"] >= STRONG_THRESHOLD:
+            positives.append("Highly relevant answers - stays focused on the topic")
+        elif component["answer_relevance"] < WEAK_THRESHOLD:
+            negatives.append("Answer relevance needs improvement - responses sometimes go off-topic")
+
+        # --- Analyze Confidence ---
+        if category["confidence"] >= STRONG_THRESHOLD:
+            positives.append("Projects strong confidence - speaks with conviction and authority")
+        elif category["confidence"] >= GOOD_THRESHOLD:
+            positives.append("Demonstrates adequate confidence in delivery")
+        elif category["confidence"] < WEAK_THRESHOLD:
+            negatives.append("Appears uncertain - could benefit from more confident delivery")
+
+        if component["acoustic_confidence"] >= STRONG_THRESHOLD:
+            positives.append("Strong vocal presence - consistent pace and clear enunciation")
+        elif component["acoustic_confidence"] < WEAK_THRESHOLD:
+            negatives.append("Voice delivery needs improvement - inconsistent pace or energy")
+
+        # --- Analyze Accent/Clarity ---
+        if category["accent_clarity"] >= STRONG_THRESHOLD:
+            positives.append("Clear accent with minimal mother tongue influence")
+        elif category["accent_clarity"] < WEAK_THRESHOLD:
+            negatives.append("Noticeable accent may affect clarity in some contexts")
+
+        # Add detected accent info if relevant
+        detected_accent = mti_results.get("detected_accent", "Unknown")
+        if detected_accent and detected_accent != "Unknown":
+            if component["native_likelihood"] >= 70:
+                positives.append(f"Natural {detected_accent} accent that is easy to understand")
+
+        # --- Generate Overall Assessment ---
+        if final_score >= 85:
+            overall_assessment = "Outstanding candidate with excellent communication skills. Highly recommended for roles requiring strong verbal communication."
+        elif final_score >= 75:
+            overall_assessment = "Strong candidate with good communication abilities. Well-suited for most professional roles with minor areas for improvement."
+        elif final_score >= 65:
+            overall_assessment = "Competent candidate with satisfactory communication skills. May benefit from targeted improvement in specific areas."
+        elif final_score >= 55:
+            overall_assessment = "Candidate shows potential but has notable areas requiring improvement. Consider for roles with less emphasis on verbal communication or with training support."
+        else:
+            overall_assessment = "Candidate needs significant improvement in communication skills. Recommended for communication training before client-facing roles."
+
+        # Generate recommendation
+        if final_score >= 75:
+            recommendation = "Recommended"
+        elif final_score >= 60:
+            recommendation = "Conditionally Recommended"
+        else:
+            recommendation = "Needs Development"
+
+        # Include any LLM feedback if available
+        llm_feedback = llm_results.get("feedback", "")
+
+        return {
+            "overall_assessment": overall_assessment,
+            "recommendation": recommendation,
+            "positives": positives if positives else ["No significant strengths identified - consider additional evaluation"],
+            "negatives": negatives if negatives else ["No significant weaknesses identified"],
+            "llm_feedback": llm_feedback,
+            "score_summary": {
+                "final_score": final_score,
+                "grade": final_scores["grade"],
+                "performance_level": final_scores["performance_level"]
+            }
+        }
+
     def _save_report(self, report: Dict[str, Any], audio_file: str) -> str:
         """Save report to JSON file"""
         
@@ -190,7 +317,27 @@ class ReportGenerator:
         print(f"\n" + "=" * 80)
         print(f"🏆 FINAL SCORE: {format_score(scores['final_score'])} - {scores['grade']} ({scores['performance_level']})")
         print("=" * 80)
-        
+
+        # Interview Summary
+        summary = report.get("summary", {})
+        if summary:
+            print(f"\n📋 INTERVIEW SUMMARY")
+            print("-" * 40)
+            print(f"  Recommendation: {summary.get('recommendation', 'N/A')}")
+            print(f"\n  {summary.get('overall_assessment', '')}")
+
+            positives = summary.get("positives", [])
+            if positives:
+                print(f"\n  ✅ Strengths:")
+                for positive in positives:
+                    print(f"    • {positive}")
+
+            negatives = summary.get("negatives", [])
+            if negatives:
+                print(f"\n  ❌ Areas for Improvement:")
+                for negative in negatives:
+                    print(f"    • {negative}")
+
         # Category scores
         print(f"\n📊 Category Scores:")
         cat_scores = scores["category_scores"]
@@ -214,8 +361,9 @@ class ReportGenerator:
         print(f"    - Answer Relevance:        {format_score(comp['answer_relevance'])}")
         
         print(f"\n  Accent & Clarity:")
-        print(f"    - MTI Impact:              {format_score(comp['mti_impact'], 100)} (lower is better)")
+        print(f"    - Accent Clarity Score:    {format_score(comp['accent_clarity_score'])} (higher = better English)")
         print(f"    - Native Likelihood:       {format_score(comp['native_likelihood'])}")
+        print(f"    - MTI Impact:              {format_score(comp['mti_impact'], 100)} (informational)")
         
         print(f"\n  Confidence:")
         print(f"    - Acoustic Confidence:     {format_score(comp['acoustic_confidence'])}")
@@ -225,6 +373,7 @@ class ReportGenerator:
         mti_results = report["detailed_results"]["mti_analysis"]
         print(f"\n🌍 Accent Analysis:")
         print(f"  • Detected: {mti_results['detected_accent']} (confidence: {mti_results['confidence']*100:.1f}%)")
+        print(f"  • English Accent Clarity: {mti_results.get('accent_clarity_score', 0):.1f}/100")
         
         # LLM Feedback
         llm_results = report["detailed_results"]["llm_analysis"]

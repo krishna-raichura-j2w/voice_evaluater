@@ -38,30 +38,35 @@ class MTIAnalyzer:
     def analyze(self, audio_file: str) -> Dict[str, Any]:
         """
         Analyze accent/MTI impact from audio file using acoustic features
-        
+
         Args:
             audio_file: Path to audio file (preferably WAV)
-            
+
         Returns:
             Dictionary containing:
             - detected_accent: Estimated accent category
             - confidence: Confidence score
             - accent_probabilities: Acoustic feature analysis
-            - mti_impact_score: MTI impact score (0-100, lower is better)
+            - accent_clarity_score: English accent clarity (0-100, higher is better)
+            - mti_impact_score: MTI impact score (0-100, higher = more MTI influence)
             - native_likelihood: Likelihood of native English speaker (0-100)
         """
-        
+
         # Load and preprocess audio
         audio, sample_rate = librosa.load(audio_file, sr=16000, mono=True)
-        
+
         # Analyze acoustic features for MTI estimation
         mti_score, native_likelihood, features = self._analyze_acoustic_features(audio, sample_rate)
-        
+
+        # accent_clarity_score: Higher = better/clearer English accent
+        accent_clarity_score = 100 - mti_score
+
         return {
             "detected_accent": self._estimate_accent_category(mti_score),
             "confidence": 0.75,  # Moderate confidence for acoustic analysis
             "accent_probabilities": features,
-            "mti_impact_score": mti_score,
+            "accent_clarity_score": accent_clarity_score,  # Higher = better English
+            "mti_impact_score": mti_score,  # Higher = more mother tongue influence
             "native_likelihood": native_likelihood
         }
     
