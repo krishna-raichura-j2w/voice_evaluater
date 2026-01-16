@@ -4,8 +4,6 @@ import json
 import base64
 import pyaudio
 import os
-import wave
-from datetime import datetime
 from dotenv import load_dotenv
 
 # Load environment variables
@@ -33,24 +31,6 @@ class TalkingBot:
         self.last_ai_response = ""
         self.response_in_progress = False
 
-        # Create recordings folder structure
-        ts = datetime.now().strftime("%Y%m%d_%H%M%S")
-        call_folder = os.path.join("recordings", f"call_{ts}")
-        os.makedirs(call_folder, exist_ok=True)
-
-        # Create timestamped log files in the call folder
-        self.text_log = open(os.path.join(call_folder, "conversation.txt"), "w", encoding="utf-8")
-
-        self.bot_wav = wave.open(os.path.join(call_folder, "bot_audio.wav"), "wb")
-        self.bot_wav.setnchannels(CHANNELS)
-        self.bot_wav.setsampwidth(self.audio.get_sample_size(FORMAT))
-        self.bot_wav.setframerate(SAMPLE_RATE)
-
-        self.user_wav = wave.open(os.path.join(call_folder, "user_audio.wav"), "wb")
-        self.user_wav.setnchannels(CHANNELS)
-        self.user_wav.setsampwidth(self.audio.get_sample_size(FORMAT))
-        self.user_wav.setframerate(SAMPLE_RATE)
-
     async def connect(self):
         """Connect to the Azure OpenAI Realtime API"""
         print("Connecting to Azure OpenAI Realtime API...")
@@ -64,74 +44,45 @@ class TalkingBot:
 
         # Interview-driven system prompt
         instructions = """
-You are an AI interviewer on behalf of  J2W.
-This is an L1 screening call.
+You are an AI interviewer.
 
 You must follow this flow exactly. Do NOT add anything extra.
 
-Opening:
+Opening rules:
+- dont ask any questions how are you and all nothing like that.
+- Start with ONLY: "Hello."
+- Immediately ask: "Are you free for a short interview now?"
+- Do NOT say "How are you?" or any other greeting text.
 
-1. Start exactly like this:
-   "Hello, this is J2W. This is an L1 screening call."
+Flow:
 
-2. Then ask:
-   "May I know your name?"
+1. Say exactly:
+   "Hello. Are you free for a short interview now?"
 
-3. After the user gives their name, say:
-   "Thank you. We will begin the interview now."
+2. If the user agrees (yes / ok / sure / ready / any positive response):
+   - Ask: "What is your name?"
+   - After the user gives their name, ask:
+     "What is your technical or professional domain?"
 
-4. Then say:
-   "Please speak for 30 seconds on a simple topic of your choice, such as:
-    your favorite place, your hobby, or your daily routine."
-
-Wait for the user to finish.
-
-Interview flow:
-
-5. Ask:
-   "What is your technical or professional domain?"
-
-6. After the user provides their domain:
+3. After the user provides their domain:
    - Ask exactly 3 technical interview questions from that domain.
    - Ask them one by one.
    - Wait for the user’s answer before asking the next question.
-   - Do not ask more than 3 technical questions.
+   - Do not ask more than 3 questions.
 
-Pronunciation / Listening test:
-
-7. After the 3 technical answers:
-   - Randomly choose any 3 words from this list and ask the candidate to repeat them clearly:
-
-   Warranty  
-   Yellow  
-   Desktop  
-   Quality  
-   Listening  
-   Environment  
-   Entertainment  
-   Product  
-   Hour  
-   Honour  
-   Help  
-   Technology  
-   Honesty  
-   Version  
-   Exposure  
-   Solution  
-
-   Ask like:
-   "Please repeat the following three words clearly: <word1>, <word2>, <word3>."
-
-8. After the user repeats them, end the call by saying:
-   "Thank you for attending this call. Have a great day."
+4. After the 3rd answer:
+   - Thank the user by name.
+   - Say that the interview is complete.
+   - End politely.
+   - Do not ask any more questions.
 
 Rules:
+- Do not say anything outside this flow.
 - Do not add small talk.
 - Do not say "How are you?"
 - Do not restart the interview.
 - Do not ask follow-up questions.
-- Follow the sequence strictly.
-- Keep a professional L1 interview tone.
+- Be concise and professional.
 """
 
         session_update = {
@@ -207,7 +158,6 @@ Rules:
         try:
             while self.is_recording and self.is_running:
                 audio_data = stream.read(CHUNK_SIZE, exception_on_overflow=False)
-                self.user_wav.writeframes(audio_data)
                 await self.send_audio_chunk(audio_data)
                 await asyncio.sleep(0.01)
         finally:
@@ -249,7 +199,6 @@ Rules:
                 if msg_type == "conversation.item.input_audio_transcription.completed":
                     transcript = data.get("transcript", "")
                     print(f"You: {transcript}")
-                    self.text_log.write(f"You: {transcript}\n")
 
                 elif msg_type == "response.audio_transcript.delta":
                     delta = data.get("delta", "")
@@ -270,11 +219,8 @@ Rules:
                 elif msg_type == "response.audio.done":
                     if audio_buffer:
                         self.play_audio(audio_buffer)
-                        self.bot_wav.writeframes(audio_buffer)
-
                         if self.last_ai_response:
                             print(f"Bot: {self.last_ai_response}")
-                            self.text_log.write(f"Bot: {self.last_ai_response}\n")
                         print("─" * 60)
                         print()
                         audio_buffer = b""
@@ -296,9 +242,6 @@ Rules:
             self.is_recording = False
             if self.ws:
                 await self.ws.close()
-            self.text_log.close()
-            self.bot_wav.close()
-            self.user_wav.close()
             self.audio.terminate()
             print("\n👋 Goodbye!")
 

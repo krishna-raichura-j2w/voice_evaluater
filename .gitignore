@@ -5,9 +5,11 @@ build/
 dist/
 wheels/
 *.egg-info
-
+recordings
 # Virtual environments
 .venv
 
 # Environment variables
 .env
+recordings/
+
